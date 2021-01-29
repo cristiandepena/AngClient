@@ -1,0 +1,16 @@
+<mat-card>
+  <form (submit)="addClient(clientForm)" #clientForm="ngForm">
+    <h1 class="mat-display-1">Clients Register Form</h1>
+    <mat-form-field class="example-full-width">
+      <mat-label>Client Name</mat-label>
+      <input type="text" name="name" matInput placeholder="Ex. Juan Perez" ngModel required #name="ngModel">
+      <mat-error *ngIf="name.invalid">Please enter a valid Name</mat-error>
+    </mat-form-field>
+    <mat-form-field class="example-full-width">
+      <mat-label>Client Addresses</mat-label>
+      <input type="text" name="address" matInput placeholder="Ex. Juan Perez" ngModel required #address="ngModel">
+      <mat-error *ngIf="address.invalid">Please enter a valid Address</mat-error>
+    </mat-form-field>
+    <button mat-raised-button color="primary" type="submit">Save</button>
+  </form>
+</mat-card>
