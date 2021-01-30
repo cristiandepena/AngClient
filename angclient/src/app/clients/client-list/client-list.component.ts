@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Client } from '../client.model';
 import { ClientService } from '../client.service';
 import { Subscription } from 'rxjs';
@@ -15,12 +15,18 @@ export class ClientListComponent implements OnInit {
   constructor(public clientService: ClientService) {}
 
   ngOnInit(): void {
-   this.clientService.getClients();
-   this.clientSub = this.clientService
+    this.clientService.getClients();
+    this.clientSub = this.clientService
       .getClientUpdateListener()
       .subscribe((clients: Client[]) => {
         this.clients = clients;
       });
+  }
+
+  onDelete(clientId: string) {
+    console.log('on Delete ', clientId);
+
+    this.clientService.deleteClient(clientId);
   }
 
   ngOnDestroy() {

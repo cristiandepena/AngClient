@@ -1,16 +1,32 @@
 <mat-card>
-  <form (submit)="addClient(clientForm)" #clientForm="ngForm">
+  <form [formGroup]="clientForm">
     <h1 class="mat-display-1">Clients Register Form</h1>
-    <mat-form-field class="example-full-width">
-      <mat-label>Client Name</mat-label>
-      <input type="text" name="name" matInput placeholder="Ex. Juan Perez" ngModel required #name="ngModel">
-      <mat-error *ngIf="name.invalid">Please enter a valid Name</mat-error>
-    </mat-form-field>
-    <mat-form-field class="example-full-width">
-      <mat-label>Client Addresses</mat-label>
-      <input type="text" name="address" matInput placeholder="Ex. Juan Perez" ngModel required #address="ngModel">
-      <mat-error *ngIf="address.invalid">Please enter a valid Address</mat-error>
-    </mat-form-field>
-    <button mat-raised-button color="primary" type="submit">Save</button>
+    <p>
+      <mat-form-field appearance="fill">
+        <mat-label>Client Name</mat-label>
+        <input type="text" name="name" matInput placeholder="Ex. Juan Perez" required formControlName="name">
+        <mat-error>Please enter a valid Name</mat-error>
+      </mat-form-field>
+    </p>
+
+    <div formArrayName="addresses">
+      <button mat-mini-fab color="primary" (click)="addAddress()">
+        <mat-icon>add</mat-icon>
+      </button>
+
+      <div *ngFor="let control of addresses.controls; let i = index;">
+
+        <mat-form-field appearance="fill">
+          <mat-label>Client Addresses</mat-label>
+          <input type="text" name="address" matInput placeholder="Ex. Juan Perez" required [formControlName]="i">
+          <mat-error>Please enter a valid Address</mat-error>
+        </mat-form-field>
+        <button mat-mini-fab color="primary" (click)="deleteAddress(i)">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </div>
+    </div>
+
+    <button mat-raised-button color="primary" type="submit" (click)="addClient()">Save</button>
   </form>
 </mat-card>

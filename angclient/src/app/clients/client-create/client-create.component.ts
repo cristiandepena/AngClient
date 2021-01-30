@@ -1,5 +1,12 @@
-import { Component, OnInit} from '@angular/core';
-import { NgForm } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import {
+  FormBuilder,
+  FormGroup,
+  NgForm,
+  FormArray,
+  Validators,
+  FormControl,
+} from '@angular/forms';
 import { ClientService } from '../client.service';
 
 @Component({
@@ -9,21 +16,46 @@ import { ClientService } from '../client.service';
 })
 export class ClientCreateComponent implements OnInit {
 
-  enteredName;
-  enteredLastName;
-  enteredAddress;
-  enteredPhone;
+  clientForm: FormGroup;
 
-  constructor(public clientService: ClientService) {}
+  constructor(public clientService: ClientService, private fb: FormBuilder) {
+    this.createForm();
+  }
 
   ngOnInit(): void {}
 
-  addClient(form: NgForm) {
-    if(form.invalid){
+  addClient() {
+    if (this.clientForm.invalid) {
       return;
     }
+    const formValue = this.clientForm.value;
+    this.clientService.addClient(formValue.name, formValue.addresses);
+    this.clientForm.reset();
+  }
 
-    this.clientService.addClient(form.value.name, form.value.address);
-    form.resetForm();
+  createForm() {
+    this.clientForm = this.fb.group({
+      name: [''],
+      addresses: this.fb.array([
+        new FormControl('', Validators.required)
+      ]),
+    });
+  }
+
+  addAddress() {
+    this.addresses.push(this.fb.control('', Validators.required));
+  }
+
+  deleteAddress(i:number){
+    console.log(this.addresses);
+
+    if(this.addresses.length == 1){
+      return;
+    }
+    this.addresses.removeAt(i);
+  }
+
+  get addresses() {
+    return this.clientForm.get('addresses') as FormArray;
   }
 }

@@ -2,9 +2,18 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
 const port = process.env.PORT || 8080;
+const mongoose = require('mongoose');
+
+const Client = require('../models/client');
+
+mongoose.connect('mongodb://localhost:27017/clientdb').then(() => {
+  console.log('Connected to DB');
+}).catch(()=>{
+  console.log('Connection Failed');
+});
 
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.urlencoded({extended: true}));
 
 app.use((req, res, next)=> {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -14,30 +23,44 @@ app.use((req, res, next)=> {
 });
 
 app.post('/api/clients', (req, res, next)=> {
-  const client = req.body;
-  console.log(client);
-  res.status(201).json({
-    message: 'Client added'
+
+  const client = new Client({
+    name: req.body.name
   });
+
+  client.addresses.push(req.body.addresses);
+  console.log('el client', client);
+
+  client.save().then(newClient => {
+
+    res.status(201).json({
+      message: 'Client added',
+      clientId: newClient._id
+    });
+  });
+
+
 });
 
-app.use('/api/clients', (req, res, next)=> {
-  const clients = [
-  {
-    id: '21345423',
-    name: 'Juan Perez',
-    addres: 'close'
-  },
-  {
-    id: '549656',
-    name: 'Cristian Andres',
-    addres: 'Av. Libertad #13'
-  }
-];
- res.json({
-   message: 'Client fetched successfully',
-   clients: clients
- });
+app.get('/api/clients', (req, res, next)=> {
+  Client.find().then( documents=> {
+    console.log(documents);
+    res.json({
+      message: 'Client fetched successfully',
+      clients: documents
+    });
+  });
+
+});
+
+app.delete('/api/clients/:id', (req, res, next) => {
+
+  Client.deleteOne({_id: req.params.id}).then(result => {
+    console.log(result);
+    res.status(200).json({
+      message: 'Client deleted'
+    });
+  });
 });
 
 app.get('/', (req, res, next) => {
