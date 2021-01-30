@@ -58,6 +58,17 @@ export class ClientService {
       });
   }
 
+  updateClient(id: string, name: string, addresses: []){
+    const client: Client = {id: id, name: name, addresses: addresses};
+    this.http.put('http://localhost:8080/api/clients/' + id, client).subscribe( response => {
+      const updatedClients = [...this.clients];
+      const oldClientIndex = updatedClients.findIndex(c => c.id === client.id);
+      updatedClients[oldClientIndex] = client;
+      this.clients = updatedClients;
+      this.clientUpdated.next([...this.clients]);
+    });
+  }
+
   deleteClient(clientId: string) {
     this.http
       .delete('http://localhost:8080/api/clients/' + clientId)

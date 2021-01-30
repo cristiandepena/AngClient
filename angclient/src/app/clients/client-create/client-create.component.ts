@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
-  NgForm,
   FormArray,
   Validators,
   FormControl,
@@ -15,8 +14,9 @@ import { ClientService } from '../client.service';
   styleUrls: ['./client-create.component.css'],
 })
 export class ClientCreateComponent implements OnInit {
-
   clientForm: FormGroup;
+  private mode = 'create';
+  clientId;
 
   constructor(public clientService: ClientService, private fb: FormBuilder) {
     this.createForm();
@@ -28,17 +28,29 @@ export class ClientCreateComponent implements OnInit {
     if (this.clientForm.invalid) {
       return;
     }
+
     const formValue = this.clientForm.value;
-    this.clientService.addClient(formValue.name, formValue.addresses);
+
+    if (this.mode === 'create') {
+
+      this.clientService.addClient(formValue.name, formValue.addresses);
+    } else {
+      // Call update method
+      console.log('Entro id ', this.clientId);
+
+      this.clientService.updateClient(
+        this.clientId,
+        formValue.name,
+        formValue.addresses
+      );
+    }
     this.clientForm.reset();
   }
 
   createForm() {
     this.clientForm = this.fb.group({
       name: [''],
-      addresses: this.fb.array([
-        new FormControl('', Validators.required)
-      ]),
+      addresses: this.fb.array([new FormControl('')]),
     });
   }
 
@@ -46,10 +58,11 @@ export class ClientCreateComponent implements OnInit {
     this.addresses.push(this.fb.control('', Validators.required));
   }
 
-  deleteAddress(i:number){
+  deleteAddress(i: number) {
     console.log(this.addresses);
 
-    if(this.addresses.length == 1){
+    // If theres only one left, dont delete
+    if (this.addresses.length == 1) {
       return;
     }
     this.addresses.removeAt(i);
@@ -57,5 +70,17 @@ export class ClientCreateComponent implements OnInit {
 
   get addresses() {
     return this.clientForm.get('addresses') as FormArray;
+  }
+
+  edit(id: string) {
+    const client = this.clientService.getClient(id);
+    this.mode = 'edit';
+
+    this.clientForm.patchValue({
+      name: client.name,
+      addresses: [client.addresses],
+    });
+
+    this.clientId = id;
   }
 }

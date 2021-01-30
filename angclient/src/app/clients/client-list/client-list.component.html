@@ -1,13 +1,14 @@
 <mat-accordion multi="true" *ngIf="clients.length > 0">
   <mat-expansion-panel *ngFor="let client of clients">
     <mat-expansion-panel-header>
+      <input type="hidden" #test value="{{client.id}}">
       {{client.name}}
     </mat-expansion-panel-header>
     <div *ngFor="let address of client.addresses;">
     {{address}}
   </div>
     <mat-action-row>
-      <button mat-button color="primary">Edit</button>
+      <button mat-button color="primary" (click)="onEdit(test)">Edit</button>
       <button mat-button color="warn" (click)="onDelete(client.id)">Delete</button>
     </mat-action-row>
   </mat-expansion-panel>

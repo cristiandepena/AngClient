@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { Client } from '../client.model';
 import { ClientService } from '../client.service';
 import { Subscription } from 'rxjs';
+import { ClientCreateComponent } from '../client-create/client-create.component';
 
 @Component({
   selector: 'app-client-list',
@@ -11,6 +12,8 @@ import { Subscription } from 'rxjs';
 export class ClientListComponent implements OnInit {
   clients: Client[] = [];
   private clientSub: Subscription;
+  @Input() createComp: ClientCreateComponent
+  clientId;
 
   constructor(public clientService: ClientService) {}
 
@@ -27,6 +30,12 @@ export class ClientListComponent implements OnInit {
     console.log('on Delete ', clientId);
 
     this.clientService.deleteClient(clientId);
+  }
+
+  onEdit(input: HTMLInputElement){
+    const clientId = input.value;
+    this.createComp.edit(clientId);
+
   }
 
   ngOnDestroy() {

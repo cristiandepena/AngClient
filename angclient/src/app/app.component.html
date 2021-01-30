@@ -1,5 +1,5 @@
 <app-header></app-header>
 <main>
-  <app-client-create></app-client-create>
-  <app-client-list></app-client-list>
+  <app-client-create #createComp></app-client-create>
+  <app-client-list [createComp]="createComp"></app-client-list>
 </main>
